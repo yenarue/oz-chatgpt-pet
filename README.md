@@ -9,6 +9,9 @@ Oz (오즈) is a round, cartoon-style silver tabby companion made for ChatGPT Wo
 ### Churu version (recommended)
 
 Oz eats churu when the hover/jump interaction is triggered.
+This version uses the refined outer-outline treatment: 10% stroke thickness
+at 25% opacity, while preserving the original tabby markings, facial details,
+props, paws, and toe lines.
 
 ![Oz eating churu](previews/churu.gif)
 
