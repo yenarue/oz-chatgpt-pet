@@ -30,6 +30,8 @@ IDLE_GIF = ROOT / "previews" / "outline-10-opacity-25-idle.gif"
 LOOK_GIF = ROOT / "previews" / "outline-10-opacity-25-look.gif"
 RUNNING_RIGHT_GIF = ROOT / "previews" / "outline-10-opacity-25-running-right.gif"
 RUNNING_LEFT_GIF = ROOT / "previews" / "outline-10-opacity-25-running-left.gif"
+RUNNING_RIGHT_WEBP = ROOT / "previews" / "outline-10-opacity-25-running-right.webp"
+RUNNING_LEFT_WEBP = ROOT / "previews" / "outline-10-opacity-25-running-left.webp"
 SOURCE_COMMIT = "4a1936513c5a5210e304d622e4150d209b16e7a9"
 CHURU_REPAIRED_STRIP = ROOT / "sources" / "churu-repaired-strip.png"
 
@@ -417,19 +419,32 @@ def render_motion_previews(atlas: Image.Image) -> None:
         optimize=False,
     )
 
-    for row, path in ((1, RUNNING_RIGHT_GIF), (2, RUNNING_LEFT_GIF)):
+    for row, gif_path, webp_path in (
+        (1, RUNNING_RIGHT_GIF, RUNNING_RIGHT_WEBP),
+        (2, RUNNING_LEFT_GIF, RUNNING_LEFT_WEBP),
+    ):
         frames = [
             atlas.crop((col * CELL_W, row * CELL_H, (col + 1) * CELL_W, (row + 1) * CELL_H))
             for col in range(FRAME_COUNTS[row])
         ]
         frames[0].save(
-            path,
+            gif_path,
             save_all=True,
             append_images=frames[1:],
             duration=110,
             loop=0,
             disposal=2,
             optimize=False,
+        )
+        frames[0].save(
+            webp_path,
+            format="WEBP",
+            save_all=True,
+            append_images=frames[1:],
+            duration=110,
+            loop=0,
+            lossless=True,
+            method=6,
         )
 
 
@@ -557,6 +572,8 @@ def main() -> None:
         "look_gif": str(LOOK_GIF.relative_to(ROOT)),
         "running_right_gif": str(RUNNING_RIGHT_GIF.relative_to(ROOT)),
         "running_left_gif": str(RUNNING_LEFT_GIF.relative_to(ROOT)),
+        "running_right_webp": str(RUNNING_RIGHT_WEBP.relative_to(ROOT)),
+        "running_left_webp": str(RUNNING_LEFT_WEBP.relative_to(ROOT)),
         "report": str(REPORT.relative_to(ROOT)),
         "processed_frames": len(frame_reports),
     }, indent=2))
