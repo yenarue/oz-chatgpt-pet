@@ -142,7 +142,11 @@ def protect_inward_detail_lines(
     return ndi.binary_dilation(protected, iterations=1) & outline_band
 
 
-def process_frame(frame: np.ndarray, band_width: float = 5.0) -> tuple[np.ndarray, dict[str, int]]:
+def process_frame(
+    frame: np.ndarray,
+    band_width: float = 5.0,
+    clean_left_running_head: bool = False,
+) -> tuple[np.ndarray, dict[str, int]]:
     alpha = frame[:, :, 3]
     inside = alpha > 0
     if not np.any(inside):
@@ -159,8 +163,46 @@ def process_frame(frame: np.ndarray, band_width: float = 5.0) -> tuple[np.ndarra
 
     outline_band = eligible & (edge_distance <= band_width)
     protected = protect_inward_detail_lines(frame, outline_band, edge_distance)
+    yy, xx = np.indices(inside.shape)
+    running_head_zone = (yy < 110) & (xx < 140)
+    running_head_top_zone = (yy < 78) & (xx < 140)
+    if clean_left_running_head:
+        # Sharp ear corners and top-touching tabby marks were occasionally
+        # misclassified as protected internal ink, leaving brief dark fragments.
+        protected[running_head_zone] = False
     outline = outline_band & ~protected
     base = smooth_outline_free_base(frame, outline, inside, edge_distance, band_width)
+
+    head_cleanup_mask = np.zeros_like(outline)
+    if clean_left_running_head:
+        base_luminance = base[:, :, :3].astype(np.float32).mean(axis=2)
+        source_luminance = frame[:, :, :3].astype(np.float32).mean(axis=2)
+        light_fur = (
+            inside
+            & (edge_distance > band_width)
+            & running_head_zone
+            & (source_luminance > 145.0)
+        )
+        dark_edge_fragment = outline & running_head_zone & (base_luminance < 145.0)
+        # Remove intermittent dark ear-base/top-stripe fragments close to the
+        # silhouette. They are not needed for the tabby read at pet size and
+        # otherwise flash like pieces of the old outline during the gait.
+        head_cleanup_mask = (
+            eligible
+            & running_head_top_zone
+            & (edge_distance <= 14.0)
+            & (source_luminance < 125.0)
+        )
+        dark_edge_fragment |= head_cleanup_mask
+        if np.any(light_fur) and np.any(dark_edge_fragment):
+            _, nearest_light = ndi.distance_transform_edt(~light_fur, return_indices=True)
+            for channel in range(3):
+                plane = base[:, :, channel]
+                source_plane = frame[:, :, channel]
+                plane[dark_edge_fragment] = source_plane[
+                    nearest_light[0][dark_edge_fragment],
+                    nearest_light[1][dark_edge_fragment],
+                ]
 
     rgb = frame[:, :, :3].astype(np.float32)
     luminance = rgb.mean(axis=2)
@@ -176,6 +218,11 @@ def process_frame(frame: np.ndarray, band_width: float = 5.0) -> tuple[np.ndarra
     rebuilt_distance = np.maximum(edge_distance - EDGE_TRIM, 0.0)
     coverage = np.clip(TARGET_WIDTH + 1.0 - rebuilt_distance, 0.0, 1.0)
     coverage *= outline.astype(np.float32) * TARGET_OPACITY
+    if clean_left_running_head:
+        # At 10% × 25%, a subpixel contour on the moving ear tips alternated
+        # between visible and invisible coverage. Omit that nearly invisible
+        # top contour entirely so it cannot flash between frames.
+        coverage[running_head_zone] = 0.0
     weight = coverage[:, :, None]
     out = base.copy()
     blended = np.rint(out[:, :, :3].astype(np.float32) * (1.0 - weight) + line_color * weight)
@@ -184,7 +231,8 @@ def process_frame(frame: np.ndarray, band_width: float = 5.0) -> tuple[np.ndarra
     rebuilt_alpha = np.rint(frame[:, :, 3].astype(np.float32) * alpha_factor).astype(np.uint8)
     out[:, :, 3][eligible] = rebuilt_alpha[eligible]
 
-    if not np.array_equal(out[:, :, :3][~outline], frame[:, :, :3][~outline]):
+    editable_rgb = outline | head_cleanup_mask
+    if not np.array_equal(out[:, :, :3][~editable_rgb], frame[:, :, :3][~editable_rgb]):
         raise AssertionError("Protected RGB changed outside the isolated outer-outline band")
     return out, {
         "outline_pixels": int(outline.sum()),
@@ -457,7 +505,11 @@ def main() -> None:
             # rest of the atlas. Remove its complete antialias band so no
             # 100%-outline ghost remains behind the new thin contour.
             band_width = 7.0 if row in (1, 2) else 5.0
-            processed, stats = process_frame(frame, band_width=band_width)
+            processed, stats = process_frame(
+                frame,
+                band_width=band_width,
+                clean_left_running_head=(row == 2),
+            )
             output[y0 : y0 + CELL_H, x0 : x0 + CELL_W] = processed
             frame_reports.append({"row": row, "frame": col, **stats})
 
