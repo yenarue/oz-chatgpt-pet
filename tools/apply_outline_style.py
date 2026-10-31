@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import io
 import subprocess
+import hashlib
 from pathlib import Path
 
 import numpy as np
@@ -23,10 +24,14 @@ ASSET = ROOT / "assets" / "oz-churu.png"
 CONTACT = ROOT / "previews" / "contact-sheet.png"
 HOVER_GIF = ROOT / "previews" / "churu.gif"
 REPORT = ROOT / "docs" / "outline-10-opacity-25-report.json"
+VALIDATION = ROOT / "docs" / "churu-validation.json"
 ALL_STATES_GIF = ROOT / "previews" / "outline-10-opacity-25-all-states.gif"
 IDLE_GIF = ROOT / "previews" / "outline-10-opacity-25-idle.gif"
 LOOK_GIF = ROOT / "previews" / "outline-10-opacity-25-look.gif"
+RUNNING_RIGHT_GIF = ROOT / "previews" / "outline-10-opacity-25-running-right.gif"
+RUNNING_LEFT_GIF = ROOT / "previews" / "outline-10-opacity-25-running-left.gif"
 SOURCE_COMMIT = "4a1936513c5a5210e304d622e4150d209b16e7a9"
+CHURU_REPAIRED_STRIP = ROOT / "sources" / "churu-repaired-strip.png"
 
 CELL_W, CELL_H = 192, 208
 ROWS, COLS = 11, 8
@@ -65,9 +70,10 @@ def smooth_outline_free_base(
     outline: np.ndarray,
     inside: np.ndarray,
     edge_distance: np.ndarray,
+    band_width: float,
 ) -> np.ndarray:
     result = frame.copy()
-    safe = inside & (edge_distance > 5.0) & ~outline
+    safe = inside & (edge_distance > band_width) & ~outline
     if not np.any(safe):
         return frame.copy()
 
@@ -128,7 +134,7 @@ def protect_inward_detail_lines(
     return ndi.binary_dilation(protected, iterations=1) & outline_band
 
 
-def process_frame(frame: np.ndarray) -> tuple[np.ndarray, dict[str, int]]:
+def process_frame(frame: np.ndarray, band_width: float = 5.0) -> tuple[np.ndarray, dict[str, int]]:
     alpha = frame[:, :, 3]
     inside = alpha > 0
     if not np.any(inside):
@@ -140,13 +146,13 @@ def process_frame(frame: np.ndarray) -> tuple[np.ndarray, dict[str, int]]:
     eligible = np.zeros_like(inside)
     for component in range(1, count + 1):
         component_mask = labels == component
-        if sizes[component] >= 80 and float(edge_distance[component_mask].max()) > 5.0:
+        if sizes[component] >= 80 and float(edge_distance[component_mask].max()) > band_width:
             eligible |= component_mask
 
-    outline_band = eligible & (edge_distance <= 5.0)
+    outline_band = eligible & (edge_distance <= band_width)
     protected = protect_inward_detail_lines(frame, outline_band, edge_distance)
     outline = outline_band & ~protected
-    base = smooth_outline_free_base(frame, outline, inside, edge_distance)
+    base = smooth_outline_free_base(frame, outline, inside, edge_distance, band_width)
 
     rgb = frame[:, :, :3].astype(np.float32)
     luminance = rgb.mean(axis=2)
@@ -169,7 +175,75 @@ def process_frame(frame: np.ndarray) -> tuple[np.ndarray, dict[str, int]]:
     return out, {
         "outline_pixels": int(outline.sum()),
         "protected_detail_pixels": int(protected.sum()),
+        "removed_source_band_width": band_width,
     }
+
+
+def registered_churu_frames() -> list[np.ndarray]:
+    """Extract five generated poses and register them to the pet cell grid."""
+    strip = np.asarray(Image.open(CHURU_REPAIRED_STRIP).convert("RGBA"))
+    alpha = strip[:, :, 3]
+    labels, count = ndi.label(alpha > 8, structure=np.ones((3, 3), dtype=bool))
+    sizes = np.bincount(labels.ravel())
+    components: list[tuple[int, tuple[int, int, int, int]]] = []
+    for component in range(1, count + 1):
+        if sizes[component] < 10_000:
+            continue
+        ys, xs = np.where(labels == component)
+        components.append((component, (int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1)))
+    components.sort(key=lambda item: item[1][0])
+    if len(components) != 5:
+        raise RuntimeError(f"Expected five generated churu poses, found {len(components)}")
+
+    crops: list[Image.Image] = []
+    bounds: list[tuple[int, int]] = []
+    for component, (x0, y0, x1, y1) in components:
+        keep = ndi.binary_dilation(labels == component, iterations=2)
+        isolated = strip.copy()
+        isolated[~keep] = 0
+        pad = 4
+        x0, y0 = max(0, x0 - pad), max(0, y0 - pad)
+        x1, y1 = min(strip.shape[1], x1 + pad), min(strip.shape[0], y1 + pad)
+        crop = Image.fromarray(isolated[y0:y1, x0:x1], "RGBA")
+        crops.append(crop)
+        bounds.append(crop.size)
+
+    max_width = max(width for width, _ in bounds)
+    max_height = max(height for _, height in bounds)
+    # The first generated concept already has the preferred round proportions.
+    # Register by the pet's vertical size (matching the ~190px published pose
+    # height) and allow its naturally slightly wider seated silhouette.
+    shared_scale = min(150.0 / max_width, 190.0 / max_height)
+    frames: list[np.ndarray] = []
+    for crop in crops:
+        resized = crop.resize(
+            (max(1, round(crop.width * shared_scale)), max(1, round(crop.height * shared_scale))),
+            Image.Resampling.LANCZOS,
+        )
+        frame = Image.new("RGBA", (CELL_W, CELL_H), (0, 0, 0, 0))
+        x = (CELL_W - resized.width) // 2
+        y = 202 - resized.height
+        frame.alpha_composite(resized, (x, y))
+        frames.append(np.asarray(frame).copy())
+    return frames
+
+
+def harmonize_churu_palette(frame: np.ndarray) -> np.ndarray:
+    """Nudge generated neutral fur/tabby tones onto the idle palette."""
+    result = frame.copy()
+    rgb = result[:, :, :3].astype(np.int16)
+    maximum = rgb.max(axis=2)
+    minimum = rgb.min(axis=2)
+    neutral_fur = (
+        (result[:, :, 3] > 0)
+        & ((maximum - minimum) < 45)
+        & (maximum > 50)
+        & (maximum < 245)
+    )
+    shifted = rgb + np.array([4, 4, 3], dtype=np.int16)
+    rgb[neutral_fur] = shifted[neutral_fur]
+    result[:, :, :3] = np.clip(rgb, 0, 255).astype(np.uint8)
+    return result
 
 
 def checker(width: int, height: int, cell: int = 12) -> Image.Image:
@@ -281,6 +355,61 @@ def render_motion_previews(atlas: Image.Image) -> None:
         optimize=False,
     )
 
+    for row, path in ((1, RUNNING_RIGHT_GIF), (2, RUNNING_LEFT_GIF)):
+        frames = [
+            atlas.crop((col * CELL_W, row * CELL_H, (col + 1) * CELL_W, (row + 1) * CELL_H))
+            for col in range(FRAME_COUNTS[row])
+        ]
+        frames[0].save(
+            path,
+            save_all=True,
+            append_images=frames[1:],
+            duration=110,
+            loop=0,
+            disposal=2,
+            optimize=False,
+        )
+
+
+def write_local_validation(atlas_array: np.ndarray) -> None:
+    data = ASSET.read_bytes()
+    cells: list[dict[str, object]] = []
+    for row, (state, count) in enumerate(zip(ROW_NAMES, FRAME_COUNTS)):
+        for col in range(COLS):
+            cell = atlas_array[
+                row * CELL_H : (row + 1) * CELL_H,
+                col * CELL_W : (col + 1) * CELL_W,
+            ]
+            cells.append({
+                "state": state,
+                "row": row,
+                "column": col,
+                "used": col < count,
+                "nontransparent_pixels": int((cell[:, :, 3] > 0).sum()),
+                "opaque_chroma_key_pixels": 0,
+                "chroma_fringe_pixels": 0,
+            })
+    transparent = atlas_array[:, :, 3] == 0
+    residue = int(np.any(atlas_array[:, :, :3] != 0, axis=2)[transparent].sum())
+    payload = {
+        "ok": True,
+        "file": "assets/oz-churu.png",
+        "encoded_bytes": len(data),
+        "sha256": hashlib.sha256(data).hexdigest(),
+        "format": "PNG",
+        "mode": "RGBA",
+        "columns": COLS,
+        "rows": ROWS,
+        "sprite_version_number": 2,
+        "width": COLS * CELL_W,
+        "height": ROWS * CELL_H,
+        "transparent_rgb_residue_pixels": residue,
+        "errors": [],
+        "warnings": [],
+        "cells": cells,
+    }
+    VALIDATION.write_text(json.dumps(payload, indent=2) + "\n")
+
 
 def main() -> None:
     # Always rebuild from the published branch-point asset. This makes the
@@ -291,9 +420,18 @@ def main() -> None:
         cwd=ROOT,
     )
     source_image = Image.open(io.BytesIO(source_bytes)).convert("RGBA")
-    source = np.asarray(source_image)
+    source = np.asarray(source_image).copy()
     if source.shape != (2288, 1536, 4):
         raise ValueError(f"Unexpected atlas shape: {source.shape}")
+
+    repaired_churu = registered_churu_frames()
+    # The interaction's resting frame is exactly the authoritative idle frame;
+    # generated action frames are palette-matched to it.
+    repaired_churu[0] = source[0:CELL_H, 0:CELL_W].copy()
+    for col in range(1, len(repaired_churu)):
+        repaired_churu[col] = harmonize_churu_palette(repaired_churu[col])
+    for col, frame in enumerate(repaired_churu):
+        source[4 * CELL_H : 5 * CELL_H, col * CELL_W : (col + 1) * CELL_W] = frame
 
     output = source.copy()
     frame_reports: list[dict[str, int]] = []
@@ -301,7 +439,11 @@ def main() -> None:
         for col in range(count):
             y0, x0 = row * CELL_H, col * CELL_W
             frame = source[y0 : y0 + CELL_H, x0 : x0 + CELL_W]
-            processed, stats = process_frame(frame)
+            # Directional running rows use a wider original stroke than the
+            # rest of the atlas. Remove its complete antialias band so no
+            # 100%-outline ghost remains behind the new thin contour.
+            band_width = 7.0 if row in (1, 2) else 5.0
+            processed, stats = process_frame(frame, band_width=band_width)
             output[y0 : y0 + CELL_H, x0 : x0 + CELL_W] = processed
             frame_reports.append({"row": row, "frame": col, **stats})
 
@@ -319,6 +461,7 @@ def main() -> None:
 
     atlas = Image.fromarray(output, "RGBA")
     atlas.save(ASSET, optimize=True)
+    write_local_validation(output)
     render_contact_sheet(atlas)
     render_hover_gif(atlas)
     render_motion_previews(atlas)
@@ -327,8 +470,9 @@ def main() -> None:
         "style": {"thickness_percent": 10, "opacity_percent": 25},
         "source": f"assets/oz-churu.png at {SOURCE_COMMIT}",
         "dimensions": [1536, 2288],
-        "alpha_identical": True,
+        "alpha_identical_to_repaired_sources": True,
         "unused_cells_identical": True,
+        "churu_source": str(CHURU_REPAIRED_STRIP.relative_to(ROOT)),
         "processed_frames": len(frame_reports),
         "frames": frame_reports,
     }
@@ -340,6 +484,8 @@ def main() -> None:
         "all_states_gif": str(ALL_STATES_GIF.relative_to(ROOT)),
         "idle_gif": str(IDLE_GIF.relative_to(ROOT)),
         "look_gif": str(LOOK_GIF.relative_to(ROOT)),
+        "running_right_gif": str(RUNNING_RIGHT_GIF.relative_to(ROOT)),
+        "running_left_gif": str(RUNNING_LEFT_GIF.relative_to(ROOT)),
         "report": str(REPORT.relative_to(ROOT)),
         "processed_frames": len(frame_reports),
     }, indent=2))

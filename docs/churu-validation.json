@@ -1,8 +1,8 @@
 {
   "ok": true,
   "file": "assets/oz-churu.png",
-  "encoded_bytes": 3434855,
-  "sha256": "f945bdf6bfc4a16592c29d7f259ba63e282d9821464f017ea620151e3e3b7e0e",
+  "encoded_bytes": 3403938,
+  "sha256": "4bbf532fab951b9318dc2aaaea8ba5516aa66f8bbdebe21155b89191faa75488",
   "format": "PNG",
   "mode": "RGBA",
   "columns": 8,
@@ -307,7 +307,7 @@
       "row": 4,
       "column": 0,
       "used": true,
-      "nontransparent_pixels": 20477,
+      "nontransparent_pixels": 20761,
       "opaque_chroma_key_pixels": 0,
       "chroma_fringe_pixels": 0
     },
@@ -316,7 +316,7 @@
       "row": 4,
       "column": 1,
       "used": true,
-      "nontransparent_pixels": 20468,
+      "nontransparent_pixels": 21826,
       "opaque_chroma_key_pixels": 0,
       "chroma_fringe_pixels": 0
     },
@@ -325,7 +325,7 @@
       "row": 4,
       "column": 2,
       "used": true,
-      "nontransparent_pixels": 20612,
+      "nontransparent_pixels": 21636,
       "opaque_chroma_key_pixels": 0,
       "chroma_fringe_pixels": 0
     },
@@ -334,7 +334,7 @@
       "row": 4,
       "column": 3,
       "used": true,
-      "nontransparent_pixels": 20119,
+      "nontransparent_pixels": 21648,
       "opaque_chroma_key_pixels": 0,
       "chroma_fringe_pixels": 0
     },
@@ -343,7 +343,7 @@
       "row": 4,
       "column": 4,
       "used": true,
-      "nontransparent_pixels": 20375,
+      "nontransparent_pixels": 21190,
       "opaque_chroma_key_pixels": 0,
       "chroma_fringe_pixels": 0
     },
@@ -663,7 +663,7 @@
       "chroma_fringe_pixels": 0
     },
     {
-      "state": "look-000-to-157.5",
+      "state": "look 000-157.5",
       "row": 9,
       "column": 0,
       "used": true,
@@ -672,7 +672,7 @@
       "chroma_fringe_pixels": 0
     },
     {
-      "state": "look-000-to-157.5",
+      "state": "look 000-157.5",
       "row": 9,
       "column": 1,
       "used": true,
@@ -681,7 +681,7 @@
       "chroma_fringe_pixels": 0
     },
     {
-      "state": "look-000-to-157.5",
+      "state": "look 000-157.5",
       "row": 9,
       "column": 2,
       "used": true,
@@ -690,7 +690,7 @@
       "chroma_fringe_pixels": 0
     },
     {
-      "state": "look-000-to-157.5",
+      "state": "look 000-157.5",
       "row": 9,
       "column": 3,
       "used": true,
@@ -699,7 +699,7 @@
       "chroma_fringe_pixels": 0
     },
     {
-      "state": "look-000-to-157.5",
+      "state": "look 000-157.5",
       "row": 9,
       "column": 4,
       "used": true,
@@ -708,7 +708,7 @@
       "chroma_fringe_pixels": 0
     },
     {
-      "state": "look-000-to-157.5",
+      "state": "look 000-157.5",
       "row": 9,
       "column": 5,
       "used": true,
@@ -717,7 +717,7 @@
       "chroma_fringe_pixels": 0
     },
     {
-      "state": "look-000-to-157.5",
+      "state": "look 000-157.5",
       "row": 9,
       "column": 6,
       "used": true,
@@ -726,7 +726,7 @@
       "chroma_fringe_pixels": 0
     },
     {
-      "state": "look-000-to-157.5",
+      "state": "look 000-157.5",
       "row": 9,
       "column": 7,
       "used": true,
@@ -735,7 +735,7 @@
       "chroma_fringe_pixels": 0
     },
     {
-      "state": "look-180-to-337.5",
+      "state": "look 180-337.5",
       "row": 10,
       "column": 0,
       "used": true,
@@ -744,7 +744,7 @@
       "chroma_fringe_pixels": 0
     },
     {
-      "state": "look-180-to-337.5",
+      "state": "look 180-337.5",
       "row": 10,
       "column": 1,
       "used": true,
@@ -753,7 +753,7 @@
       "chroma_fringe_pixels": 0
     },
     {
-      "state": "look-180-to-337.5",
+      "state": "look 180-337.5",
       "row": 10,
       "column": 2,
       "used": true,
@@ -762,7 +762,7 @@
       "chroma_fringe_pixels": 0
     },
     {
-      "state": "look-180-to-337.5",
+      "state": "look 180-337.5",
       "row": 10,
       "column": 3,
       "used": true,
@@ -771,7 +771,7 @@
       "chroma_fringe_pixels": 0
     },
     {
-      "state": "look-180-to-337.5",
+      "state": "look 180-337.5",
       "row": 10,
       "column": 4,
       "used": true,
@@ -780,7 +780,7 @@
       "chroma_fringe_pixels": 0
     },
     {
-      "state": "look-180-to-337.5",
+      "state": "look 180-337.5",
       "row": 10,
       "column": 5,
       "used": true,
@@ -789,7 +789,7 @@
       "chroma_fringe_pixels": 0
     },
     {
-      "state": "look-180-to-337.5",
+      "state": "look 180-337.5",
       "row": 10,
       "column": 6,
       "used": true,
@@ -798,7 +798,7 @@
       "chroma_fringe_pixels": 0
     },
     {
-      "state": "look-180-to-337.5",
+      "state": "look 180-337.5",
       "row": 10,
       "column": 7,
       "used": true,

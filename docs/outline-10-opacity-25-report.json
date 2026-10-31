@@ -8,447 +8,521 @@
     1536,
     2288
   ],
-  "alpha_identical": true,
+  "alpha_identical_to_repaired_sources": true,
   "unused_cells_identical": true,
+  "churu_source": "sources/churu-repaired-strip.png",
   "processed_frames": 73,
   "frames": [
     {
       "row": 0,
       "frame": 0,
       "outline_pixels": 4222,
-      "protected_detail_pixels": 35
+      "protected_detail_pixels": 35,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 0,
       "frame": 1,
       "outline_pixels": 4247,
-      "protected_detail_pixels": 48
+      "protected_detail_pixels": 48,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 0,
       "frame": 2,
       "outline_pixels": 4309,
-      "protected_detail_pixels": 42
+      "protected_detail_pixels": 42,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 0,
       "frame": 3,
       "outline_pixels": 4160,
-      "protected_detail_pixels": 59
+      "protected_detail_pixels": 59,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 0,
       "frame": 4,
       "outline_pixels": 4097,
-      "protected_detail_pixels": 47
+      "protected_detail_pixels": 47,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 0,
       "frame": 5,
       "outline_pixels": 4241,
-      "protected_detail_pixels": 41
+      "protected_detail_pixels": 41,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 1,
       "frame": 0,
-      "outline_pixels": 4148,
-      "protected_detail_pixels": 3
+      "outline_pixels": 5363,
+      "protected_detail_pixels": 29,
+      "removed_source_band_width": 7.0
     },
     {
       "row": 1,
       "frame": 1,
-      "outline_pixels": 3874,
-      "protected_detail_pixels": 2
+      "outline_pixels": 4989,
+      "protected_detail_pixels": 39,
+      "removed_source_band_width": 7.0
     },
     {
       "row": 1,
       "frame": 2,
-      "outline_pixels": 3611,
-      "protected_detail_pixels": 3
+      "outline_pixels": 4637,
+      "protected_detail_pixels": 50,
+      "removed_source_band_width": 7.0
     },
     {
       "row": 1,
       "frame": 3,
-      "outline_pixels": 4094,
-      "protected_detail_pixels": 0
+      "outline_pixels": 5291,
+      "protected_detail_pixels": 34,
+      "removed_source_band_width": 7.0
     },
     {
       "row": 1,
       "frame": 4,
-      "outline_pixels": 3603,
-      "protected_detail_pixels": 0
+      "outline_pixels": 4650,
+      "protected_detail_pixels": 20,
+      "removed_source_band_width": 7.0
     },
     {
       "row": 1,
       "frame": 5,
-      "outline_pixels": 4054,
-      "protected_detail_pixels": 2
+      "outline_pixels": 5221,
+      "protected_detail_pixels": 51,
+      "removed_source_band_width": 7.0
     },
     {
       "row": 1,
       "frame": 6,
-      "outline_pixels": 4006,
-      "protected_detail_pixels": 0
+      "outline_pixels": 5180,
+      "protected_detail_pixels": 23,
+      "removed_source_band_width": 7.0
     },
     {
       "row": 1,
       "frame": 7,
-      "outline_pixels": 3866,
-      "protected_detail_pixels": 3
+      "outline_pixels": 4987,
+      "protected_detail_pixels": 40,
+      "removed_source_band_width": 7.0
     },
     {
       "row": 2,
       "frame": 0,
-      "outline_pixels": 4213,
-      "protected_detail_pixels": 0
+      "outline_pixels": 5444,
+      "protected_detail_pixels": 41,
+      "removed_source_band_width": 7.0
     },
     {
       "row": 2,
       "frame": 1,
-      "outline_pixels": 4003,
-      "protected_detail_pixels": 0
+      "outline_pixels": 5171,
+      "protected_detail_pixels": 41,
+      "removed_source_band_width": 7.0
     },
     {
       "row": 2,
       "frame": 2,
-      "outline_pixels": 3579,
-      "protected_detail_pixels": 0
+      "outline_pixels": 4628,
+      "protected_detail_pixels": 24,
+      "removed_source_band_width": 7.0
     },
     {
       "row": 2,
       "frame": 3,
-      "outline_pixels": 4260,
-      "protected_detail_pixels": 0
+      "outline_pixels": 5505,
+      "protected_detail_pixels": 38,
+      "removed_source_band_width": 7.0
     },
     {
       "row": 2,
       "frame": 4,
-      "outline_pixels": 3732,
-      "protected_detail_pixels": 3
+      "outline_pixels": 4801,
+      "protected_detail_pixels": 50,
+      "removed_source_band_width": 7.0
     },
     {
       "row": 2,
       "frame": 5,
-      "outline_pixels": 4210,
-      "protected_detail_pixels": 5
+      "outline_pixels": 5446,
+      "protected_detail_pixels": 49,
+      "removed_source_band_width": 7.0
     },
     {
       "row": 2,
       "frame": 6,
-      "outline_pixels": 4188,
-      "protected_detail_pixels": 6
+      "outline_pixels": 5404,
+      "protected_detail_pixels": 59,
+      "removed_source_band_width": 7.0
     },
     {
       "row": 2,
       "frame": 7,
-      "outline_pixels": 3770,
-      "protected_detail_pixels": 2
+      "outline_pixels": 4919,
+      "protected_detail_pixels": 30,
+      "removed_source_band_width": 7.0
     },
     {
       "row": 3,
       "frame": 0,
       "outline_pixels": 4072,
-      "protected_detail_pixels": 34
+      "protected_detail_pixels": 34,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 3,
       "frame": 1,
       "outline_pixels": 4033,
-      "protected_detail_pixels": 47
+      "protected_detail_pixels": 47,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 3,
       "frame": 2,
       "outline_pixels": 4146,
-      "protected_detail_pixels": 48
+      "protected_detail_pixels": 48,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 3,
       "frame": 3,
       "outline_pixels": 4044,
-      "protected_detail_pixels": 28
+      "protected_detail_pixels": 28,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 4,
       "frame": 0,
-      "outline_pixels": 3902,
-      "protected_detail_pixels": 0
+      "outline_pixels": 4222,
+      "protected_detail_pixels": 35,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 4,
       "frame": 1,
-      "outline_pixels": 3966,
-      "protected_detail_pixels": 0
+      "outline_pixels": 4176,
+      "protected_detail_pixels": 4,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 4,
       "frame": 2,
-      "outline_pixels": 3967,
-      "protected_detail_pixels": 2
+      "outline_pixels": 4163,
+      "protected_detail_pixels": 0,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 4,
       "frame": 3,
-      "outline_pixels": 3946,
-      "protected_detail_pixels": 3
+      "outline_pixels": 4166,
+      "protected_detail_pixels": 3,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 4,
       "frame": 4,
-      "outline_pixels": 3965,
-      "protected_detail_pixels": 0
+      "outline_pixels": 4138,
+      "protected_detail_pixels": 0,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 5,
       "frame": 0,
       "outline_pixels": 4493,
-      "protected_detail_pixels": 4
+      "protected_detail_pixels": 4,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 5,
       "frame": 1,
       "outline_pixels": 4278,
-      "protected_detail_pixels": 3
+      "protected_detail_pixels": 3,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 5,
       "frame": 2,
       "outline_pixels": 3881,
-      "protected_detail_pixels": 5
+      "protected_detail_pixels": 5,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 5,
       "frame": 3,
       "outline_pixels": 3396,
-      "protected_detail_pixels": 0
+      "protected_detail_pixels": 0,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 5,
       "frame": 4,
       "outline_pixels": 3374,
-      "protected_detail_pixels": 0
+      "protected_detail_pixels": 0,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 5,
       "frame": 5,
       "outline_pixels": 3361,
-      "protected_detail_pixels": 9
+      "protected_detail_pixels": 9,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 5,
       "frame": 6,
       "outline_pixels": 4219,
-      "protected_detail_pixels": 5
+      "protected_detail_pixels": 5,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 5,
       "frame": 7,
       "outline_pixels": 4266,
-      "protected_detail_pixels": 0
+      "protected_detail_pixels": 0,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 6,
       "frame": 0,
       "outline_pixels": 4310,
-      "protected_detail_pixels": 26
+      "protected_detail_pixels": 26,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 6,
       "frame": 1,
       "outline_pixels": 4301,
-      "protected_detail_pixels": 18
+      "protected_detail_pixels": 18,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 6,
       "frame": 2,
       "outline_pixels": 4303,
-      "protected_detail_pixels": 36
+      "protected_detail_pixels": 36,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 6,
       "frame": 3,
       "outline_pixels": 4271,
-      "protected_detail_pixels": 26
+      "protected_detail_pixels": 26,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 6,
       "frame": 4,
       "outline_pixels": 4312,
-      "protected_detail_pixels": 19
+      "protected_detail_pixels": 19,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 6,
       "frame": 5,
       "outline_pixels": 4284,
-      "protected_detail_pixels": 25
+      "protected_detail_pixels": 25,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 7,
       "frame": 0,
       "outline_pixels": 4422,
-      "protected_detail_pixels": 7
+      "protected_detail_pixels": 7,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 7,
       "frame": 1,
       "outline_pixels": 4564,
-      "protected_detail_pixels": 11
+      "protected_detail_pixels": 11,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 7,
       "frame": 2,
       "outline_pixels": 4432,
-      "protected_detail_pixels": 17
+      "protected_detail_pixels": 17,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 7,
       "frame": 3,
       "outline_pixels": 4372,
-      "protected_detail_pixels": 11
+      "protected_detail_pixels": 11,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 7,
       "frame": 4,
       "outline_pixels": 4368,
-      "protected_detail_pixels": 8
+      "protected_detail_pixels": 8,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 7,
       "frame": 5,
       "outline_pixels": 4569,
-      "protected_detail_pixels": 17
+      "protected_detail_pixels": 17,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 8,
       "frame": 0,
       "outline_pixels": 4498,
-      "protected_detail_pixels": 10
+      "protected_detail_pixels": 10,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 8,
       "frame": 1,
       "outline_pixels": 4346,
-      "protected_detail_pixels": 21
+      "protected_detail_pixels": 21,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 8,
       "frame": 2,
       "outline_pixels": 4267,
-      "protected_detail_pixels": 12
+      "protected_detail_pixels": 12,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 8,
       "frame": 3,
       "outline_pixels": 4480,
-      "protected_detail_pixels": 24
+      "protected_detail_pixels": 24,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 8,
       "frame": 4,
       "outline_pixels": 4486,
-      "protected_detail_pixels": 8
+      "protected_detail_pixels": 8,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 8,
       "frame": 5,
       "outline_pixels": 4224,
-      "protected_detail_pixels": 12
+      "protected_detail_pixels": 12,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 9,
       "frame": 0,
       "outline_pixels": 4033,
-      "protected_detail_pixels": 32
+      "protected_detail_pixels": 32,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 9,
       "frame": 1,
       "outline_pixels": 3877,
-      "protected_detail_pixels": 43
+      "protected_detail_pixels": 43,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 9,
       "frame": 2,
       "outline_pixels": 3845,
-      "protected_detail_pixels": 31
+      "protected_detail_pixels": 31,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 9,
       "frame": 3,
       "outline_pixels": 3805,
-      "protected_detail_pixels": 40
+      "protected_detail_pixels": 40,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 9,
       "frame": 4,
       "outline_pixels": 3803,
-      "protected_detail_pixels": 43
+      "protected_detail_pixels": 43,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 9,
       "frame": 5,
       "outline_pixels": 3699,
-      "protected_detail_pixels": 49
+      "protected_detail_pixels": 49,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 9,
       "frame": 6,
       "outline_pixels": 3633,
-      "protected_detail_pixels": 37
+      "protected_detail_pixels": 37,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 9,
       "frame": 7,
       "outline_pixels": 3584,
-      "protected_detail_pixels": 25
+      "protected_detail_pixels": 25,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 10,
       "frame": 0,
       "outline_pixels": 3671,
-      "protected_detail_pixels": 62
+      "protected_detail_pixels": 62,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 10,
       "frame": 1,
       "outline_pixels": 3604,
-      "protected_detail_pixels": 40
+      "protected_detail_pixels": 40,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 10,
       "frame": 2,
       "outline_pixels": 3541,
-      "protected_detail_pixels": 52
+      "protected_detail_pixels": 52,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 10,
       "frame": 3,
       "outline_pixels": 3555,
-      "protected_detail_pixels": 59
+      "protected_detail_pixels": 59,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 10,
       "frame": 4,
       "outline_pixels": 3477,
-      "protected_detail_pixels": 51
+      "protected_detail_pixels": 51,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 10,
       "frame": 5,
       "outline_pixels": 3469,
-      "protected_detail_pixels": 55
+      "protected_detail_pixels": 55,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 10,
       "frame": 6,
       "outline_pixels": 3486,
-      "protected_detail_pixels": 55
+      "protected_detail_pixels": 55,
+      "removed_source_band_width": 5.0
     },
     {
       "row": 10,
       "frame": 7,
       "outline_pixels": 3527,
-      "protected_detail_pixels": 55
+      "protected_detail_pixels": 55,
+      "removed_source_band_width": 5.0
     }
   ]
 }
