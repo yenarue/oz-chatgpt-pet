@@ -51,6 +51,7 @@ ROW_NAMES = (
 )
 TARGET_WIDTH = 0.8  # 10% of the calibrated eight-pixel antialiased stroke
 TARGET_OPACITY = 0.25
+EDGE_TRIM = 2.5  # remove the old wide outline's outer alpha footprint
 
 
 def font(size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
@@ -72,36 +73,43 @@ def smooth_outline_free_base(
     edge_distance: np.ndarray,
     band_width: float,
 ) -> np.ndarray:
+    """Continue local interior colors outward along the silhouette normal."""
     result = frame.copy()
     safe = inside & (edge_distance > band_width) & ~outline
     if not np.any(safe):
         return frame.copy()
 
+    # Bilinear inward-normal sampling keeps local ear, fur, tabby, paw and
+    # prop colors separate. The previous harmonic average mixed them into a
+    # broad gray ring that looked like the old 100% outline.
     _, nearest = ndi.distance_transform_edt(~safe, return_indices=True)
-    working = frame[:, :, :3].astype(np.float32).copy()
-    for channel in range(3):
-        source = frame[:, :, channel]
-        working[:, :, channel][outline] = source[nearest[0][outline], nearest[1][outline]]
-
-    support = inside.astype(np.float32)
-    kernel = np.array(
-        [[1.0, 2.0, 1.0], [2.0, 0.0, 2.0], [1.0, 2.0, 1.0]],
-        dtype=np.float32,
+    gy, gx = np.gradient(edge_distance.astype(np.float32))
+    magnitude = np.maximum(np.hypot(gx, gy), 1e-4)
+    nx, ny = gx / magnitude, gy / magnitude
+    yy, xx = np.indices(edge_distance.shape, dtype=np.float32)
+    offset = np.clip(band_width + 1.25 - edge_distance, 0.0, band_width + 1.25)
+    sample_y = yy + ny * offset
+    sample_x = xx + nx * offset
+    sampled_alpha = ndi.map_coordinates(
+        frame[:, :, 3].astype(np.float32),
+        [sample_y, sample_x],
+        order=1,
+        mode="nearest",
     )
-    denominator = ndi.convolve(support, kernel, mode="constant", cval=0.0)
-    denominator = np.maximum(denominator, 1.0)
-    for _ in range(120):
-        for channel in range(3):
-            numerator = ndi.convolve(
-                working[:, :, channel] * support,
-                kernel,
-                mode="constant",
-                cval=0.0,
-            )
-            relaxed = numerator / denominator
-            working[:, :, channel][outline] = relaxed[outline]
 
-    result[:, :, :3] = np.clip(np.rint(working), 0, 255).astype(np.uint8)
+    for channel in range(3):
+        source = frame[:, :, channel].astype(np.float32)
+        sampled = ndi.map_coordinates(
+            source,
+            [sample_y, sample_x],
+            order=1,
+            mode="nearest",
+        )
+        fallback = source[nearest[0], nearest[1]]
+        sampled = np.where(sampled_alpha >= 128.0, sampled, fallback)
+        plane = result[:, :, channel]
+        plane[outline] = np.clip(np.rint(sampled[outline]), 0, 255).astype(np.uint8)
+
     result[:, :, 3] = frame[:, :, 3]
     return result
 
@@ -162,16 +170,22 @@ def process_frame(frame: np.ndarray, band_width: float = 5.0) -> tuple[np.ndarra
         if np.any(dark_source)
         else np.array([42.0, 36.0, 32.0], dtype=np.float32)
     )
-    coverage = np.clip(TARGET_WIDTH + 1.0 - edge_distance, 0.0, 1.0)
+    # Move the visible silhouette edge inward so the previous wide outline's
+    # semi-transparent footprint cannot survive as a gray halo. Rebuild a
+    # fresh one-pixel antialias ramp and draw the new thin line at that edge.
+    rebuilt_distance = np.maximum(edge_distance - EDGE_TRIM, 0.0)
+    coverage = np.clip(TARGET_WIDTH + 1.0 - rebuilt_distance, 0.0, 1.0)
     coverage *= outline.astype(np.float32) * TARGET_OPACITY
     weight = coverage[:, :, None]
     out = base.copy()
     blended = np.rint(out[:, :, :3].astype(np.float32) * (1.0 - weight) + line_color * weight)
     out[:, :, :3] = np.clip(blended, 0, 255).astype(np.uint8)
-    out[:, :, 3] = frame[:, :, 3]
+    alpha_factor = np.clip(edge_distance - EDGE_TRIM, 0.0, 1.0)
+    rebuilt_alpha = np.rint(frame[:, :, 3].astype(np.float32) * alpha_factor).astype(np.uint8)
+    out[:, :, 3][eligible] = rebuilt_alpha[eligible]
 
-    if not np.array_equal(out[~outline], frame[~outline]):
-        raise AssertionError("Protected pixels changed outside the isolated outer-outline band")
+    if not np.array_equal(out[:, :, :3][~outline], frame[:, :, :3][~outline]):
+        raise AssertionError("Protected RGB changed outside the isolated outer-outline band")
     return out, {
         "outline_pixels": int(outline.sum()),
         "protected_detail_pixels": int(protected.sum()),
@@ -447,9 +461,8 @@ def main() -> None:
             output[y0 : y0 + CELL_H, x0 : x0 + CELL_W] = processed
             frame_reports.append({"row": row, "frame": col, **stats})
 
-    # Empty cells and every alpha byte must remain unchanged.
-    if not np.array_equal(output[:, :, 3], source[:, :, 3]):
-        raise AssertionError("Atlas alpha geometry changed")
+    # Empty cells remain byte-identical; used-cell alpha is intentionally
+    # rebuilt at the silhouette edge to remove the old wide-stroke footprint.
     for row, count in enumerate(FRAME_COUNTS):
         for col in range(count, COLS):
             y0, x0 = row * CELL_H, col * CELL_W
@@ -458,6 +471,11 @@ def main() -> None:
                 source[y0 : y0 + CELL_H, x0 : x0 + CELL_W],
             ):
                 raise AssertionError(f"Unused cell changed: row {row}, frame {col}")
+
+    # The rebuilt silhouette intentionally clears the old outline footprint;
+    # clear hidden RGB under those newly transparent pixels as required by the
+    # pet sprite contract.
+    output[:, :, :3][output[:, :, 3] == 0] = 0
 
     atlas = Image.fromarray(output, "RGBA")
     atlas.save(ASSET, optimize=True)
@@ -470,7 +488,8 @@ def main() -> None:
         "style": {"thickness_percent": 10, "opacity_percent": 25},
         "source": f"assets/oz-churu.png at {SOURCE_COMMIT}",
         "dimensions": [1536, 2288],
-        "alpha_identical_to_repaired_sources": True,
+        "alpha_geometry_rebuilt": True,
+        "edge_trim_pixels": EDGE_TRIM,
         "unused_cells_identical": True,
         "churu_source": str(CHURU_REPAIRED_STRIP.relative_to(ROOT)),
         "processed_frames": len(frame_reports),

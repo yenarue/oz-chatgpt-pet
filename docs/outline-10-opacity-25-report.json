@@ -8,7 +8,8 @@
     1536,
     2288
   ],
-  "alpha_identical_to_repaired_sources": true,
+  "alpha_geometry_rebuilt": true,
+  "edge_trim_pixels": 2.5,
   "unused_cells_identical": true,
   "churu_source": "sources/churu-repaired-strip.png",
   "processed_frames": 73,
